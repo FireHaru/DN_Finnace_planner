@@ -15,13 +15,13 @@ Database của ứng dụng được tạo qua Vercel-Managed Neon integration. 
    Copy-Item .env.example .env
    ```
 
-   Thay placeholder trong `.env` bằng connection string Neon. Tạo secret bằng lệnh dưới đây, rồi đặt **chuỗi được in ra** làm giá trị `BETTER_AUTH_SECRET` trong `.env.local` (không nhập nguyên văn placeholder):
+   Thay placeholder trong `.env` bằng connection string Neon. Tạo secret bằng lệnh dưới đây, rồi đặt **chuỗi được in ra** làm giá trị `BETTER_AUTH_SECRET` trong `.env` (không nhập nguyên văn placeholder):
 
    ```sh
    node -e "console.log(require('node:crypto').randomBytes(32).toString('base64url'))"
    ```
 
-   Thêm URL local vào `.env.local`:
+   Thêm URL local vào `.env`:
 
    ```env
    BETTER_AUTH_URL=http://localhost:3000
