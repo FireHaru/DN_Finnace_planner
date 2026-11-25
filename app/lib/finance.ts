@@ -69,6 +69,7 @@ export interface WishlistItem {
   id: string;
   name: string;
   cost: number;
+  savedAmount: number;
   priority: Priority;
   category: WishCategory;
   notified: number[];
@@ -91,6 +92,10 @@ export const wishlistSchema = z.object({
   category: z.enum(WISH_CATEGORIES),
 });
 
+export const contributionSchema = z.object({
+  amount: moneySchema,
+});
+
 export const idSchema = z.uuid();
 
 export function formatVND(amount: number) {
@@ -106,6 +111,10 @@ export function balanceOf(transactions: Transaction[]) {
     (balance, transaction) => balance + (transaction.type === "INCOME" ? transaction.amount : -transaction.amount),
     0,
   );
+}
+
+export function availableBalanceOf(transactions: Transaction[], wishlist: Pick<WishlistItem, "savedAmount">[]) {
+  return balanceOf(transactions) - wishlist.reduce((total, wish) => total + wish.savedAmount, 0);
 }
 
 export function progressPercent(balance: number, cost: number) {

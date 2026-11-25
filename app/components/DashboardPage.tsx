@@ -1,18 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowDownLeft, ArrowRight, ArrowUpRight, CirclePlus, Clock3, Sparkles, Wallet } from "lucide-react";
+import { useState } from "react";
+import { ArrowDownLeft, ArrowRight, ArrowUpRight, CirclePlus, Clock3, Cloud, List, Wallet } from "lucide-react";
 import { DataIssue } from "@/components/DataIssue";
 import { LoadingState } from "@/components/LoadingState";
+import { useAuthUser } from "@/components/AuthUserProvider";
 import { PageHeader } from "@/components/PageHeader";
+import { TransactionDialog } from "@/components/TransactionDialog";
 import { useFinance } from "@/components/FinanceProvider";
-import { balanceOf, CATEGORY_LABEL, formatVND, isInMonth, progressPercent } from "@/lib/finance";
+import { WISH_CATEGORY_ICONS } from "@/components/wish-category-icons";
+import { availableBalanceOf, CATEGORY_LABEL, formatVND, isInMonth, progressPercent } from "@/lib/finance";
 
 const CHART_COLORS = ["#39705c", "#e7b66b", "#d68168", "#7896a4", "#93a77a", "#b5869c", "#8379a4", "#c5b9a2"];
 
 export function DashboardPage() {
+  const user = useAuthUser();
   const { transactions, wishlist, loading, error, refresh } = useFinance();
-  const balance = balanceOf(transactions);
+  const [adding, setAdding] = useState(false);
+  const balance = availableBalanceOf(transactions, wishlist);
   const currentMonth = transactions.filter((transaction) => isInMonth(transaction.date));
   const income = currentMonth.filter((transaction) => transaction.type === "INCOME").reduce((sum, item) => sum + item.amount, 0);
   const expense = currentMonth.filter((transaction) => transaction.type === "EXPENSE").reduce((sum, item) => sum + item.amount, 0);
@@ -39,18 +45,18 @@ export function DashboardPage() {
     <>
       <PageHeader
         eyebrow={dateLabel}
-        title="Chào Minh Anh 👋"
+        title={`Chào ${user.name} 👋`}
         subtitle="Một chút tổng kết để bạn luôn chủ động với tiền của mình."
-        action={<Link className="button button-primary" href="/giao-dich"><CirclePlus size={17} /> Thêm giao dịch</Link>}
+        action={<button className="button button-primary" type="button" onClick={() => setAdding(true)}><CirclePlus size={17} /> Thêm giao dịch</button>}
       />
       {error && <DataIssue message={error} onRetry={() => void refresh().catch(() => undefined)} />}
       {loading && transactions.length === 0 ? <LoadingState /> : (
         <>
           <section className="summary-grid" aria-label="Tổng quan tài chính">
             <article className="balance-card">
-              <div className="balance-card-top"><span className="balance-label"><Wallet size={16} /> Tổng số dư</span><span className="balance-period">MỌI THỜI ĐIỂM</span></div>
+              <div className="balance-card-top"><span className="balance-label"><Wallet size={16} /> Số dư khả dụng</span><span className="balance-period">MỌI THỜI ĐIỂM</span></div>
               <p className="balance-value">{formatVND(balance)}</p>
-              <div className="balance-bottom"><span>Thu nhập trừ đi chi tiêu</span><span className="balance-decoration">● ● ●</span></div>
+              <div className="balance-bottom"><span>Sau khi trừ tiền đã bỏ vào quỹ</span><span className="balance-decoration">● ● ●</span></div>
               <span className="balance-orb balance-orb-one" /><span className="balance-orb balance-orb-two" />
             </article>
             <article className="stat-card">
@@ -72,7 +78,7 @@ export function DashboardPage() {
                 <span className="panel-period">THÁNG NÀY</span>
               </div>
               {categories.length === 0 ? (
-                <div className="empty-chart"><span className="empty-chart-icon"><Sparkles size={20} /></span><strong>Chưa có khoản chi nào</strong><span>Giao dịch chi tiêu sẽ hiện ở đây.</span></div>
+                <div className="empty-chart"><span className="empty-chart-icon"><List size={20} /></span><strong>Chưa có khoản chi nào</strong><span>Giao dịch chi tiêu sẽ hiện ở đây.</span></div>
               ) : (
                 <div className="expense-chart-layout">
                   <div className="donut-wrap">
@@ -100,15 +106,16 @@ export function DashboardPage() {
                 <Link className="text-link" href="/wishlist">Tất cả <ArrowRight size={15} /></Link>
               </div>
               {wishlist.length === 0 ? (
-                <div className="empty-goals"><span className="empty-goal-icon">✳</span><strong>Bắt đầu với một ước mơ</strong><span>Thêm mục tiêu để theo dõi hành trình tiết kiệm.</span><Link href="/wishlist">Tạo mục tiêu <ArrowRight size={14} /></Link></div>
+                <div className="empty-goals"><span className="empty-goal-icon"><Cloud size={21} /></span><strong>Bắt đầu với một ước mơ</strong><span>Thêm mục tiêu để theo dõi hành trình tiết kiệm.</span><Link href="/wishlist">Tạo mục tiêu <ArrowRight size={14} /></Link></div>
               ) : (
                 <div className="goal-list">
                   {wishlist.slice(0, 4).map((wish, index) => {
-                    const progress = progressPercent(balance, wish.cost);
+                    const progress = progressPercent(wish.savedAmount, wish.cost);
+                    const Icon = WISH_CATEGORY_ICONS[wish.category];
                     return (
                       <div className="goal-row" key={wish.id}>
-                        <span className={`goal-symbol goal-symbol-${index % 4}`}>{wish.category === "TRAVEL" ? "↗" : wish.category === "TECHNOLOGY" ? "⌘" : wish.category === "HEALTH" ? "♡" : "✳"}</span>
-                        <div className="goal-info"><div className="goal-title-row"><strong>{wish.name}</strong><span>{Math.round(progress)}%</span></div><div className="progress-track"><span style={{ width: `${progress}%` }} /></div><p>{formatVND(wish.cost)} <span>mục tiêu</span></p></div>
+                        <span className={`goal-symbol goal-symbol-${index % 4}`}><Icon size={17} strokeWidth={1.8} /></span>
+                        <div className="goal-info"><div className="goal-title-row"><strong>{wish.name}</strong><span>{Math.round(progress)}%</span></div><div className="progress-track"><span style={{ width: `${progress}%` }} /></div><p>{formatVND(wish.savedAmount)} <span>/ {formatVND(wish.cost)}</span></p></div>
                       </div>
                     );
                   })}
@@ -142,6 +149,7 @@ export function DashboardPage() {
           <footer className="dashboard-footer"><span><Clock3 size={14} /> Dành một phút mỗi tuần để xem lại chi tiêu nhé.</span><Link href="/giao-dich">Quản lý tài chính <ArrowRight size={14} /></Link></footer>
         </>
       )}
+      {adding && <TransactionDialog transaction={null} onClose={() => setAdding(false)} />}
     </>
   );
 }

@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { ArrowLeftRight, ChartNoAxesCombined, Gift, LayoutDashboard, Leaf, Plus, Search } from "lucide-react";
+import type { AuthUser } from "@/lib/auth";
+import { SignOutButton } from "@/components/SignOutButton";
 
 const NAV_ITEMS = [
   { href: "/", label: "Tổng quan", icon: LayoutDashboard },
@@ -11,16 +13,23 @@ const NAV_ITEMS = [
   { href: "/wishlist", label: "Mục tiêu", icon: Gift },
 ];
 
-export function AppShell({ children }: { children: ReactNode }) {
+export function AppShell({ children, user }: { children: ReactNode; user: AuthUser }) {
   const pathname = usePathname();
   const currentPage = NAV_ITEMS.find((item) => item.href === pathname)?.label ?? "Tài chính";
+  const initials = user.name
+    .trim()
+    .split(/\s+/)
+    .slice(-2)
+    .map((part) => part[0] ?? "")
+    .join("")
+    .toLocaleUpperCase("vi");
 
   return (
     <div className="app-layout">
       <aside className="sidebar">
         <Link className="brand" href="/">
           <span className="brand-mark"><Leaf size={19} strokeWidth={2.2} /></span>
-          <span>mầm<span className="brand-dot">.</span></span>
+          <span>Finnace planner<span className="brand-dot">.</span></span>
         </Link>
         <div className="workspace-label">KHÔNG GIAN CỦA BẠN</div>
         <nav className="side-nav" aria-label="Điều hướng chính">
@@ -37,8 +46,8 @@ export function AppShell({ children }: { children: ReactNode }) {
           <p>Mỗi khoản nhỏ hôm nay sẽ tạo nên tự do ngày mai.</p>
         </div>
         <div className="profile-card">
-          <div className="avatar">MA</div>
-          <div className="profile-copy"><strong>Minh Anh</strong><span>Kế hoạch cá nhân</span></div>
+          <div aria-hidden="true" className="avatar">{initials}</div>
+          <div className="profile-copy"><strong>{user.name}</strong><span>{user.email}</span></div>
         </div>
       </aside>
 
@@ -47,14 +56,14 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="mobile-brand">
             <Link className="brand" href="/">
               <span className="brand-mark"><Leaf size={18} /></span>
-              <span>mầm<span className="brand-dot">.</span></span>
             </Link>
             <span className="mobile-page-label">{currentPage}</span>
           </div>
-          <div className="breadcrumb"><span>Không gian của bạn</span><span className="breadcrumb-slash">/</span><strong>{currentPage}</strong></div>
+          <div className="breadcrumb"><span>Không gian của bạn</span><span className="breadcrumb-sl ash">/</span><strong>{currentPage}</strong></div>
           <div className="topbar-actions">
             <Link href="/giao-dich" className="top-search"><Search size={17} /><span>Tra cứu giao dịch</span></Link>
-            <div className="avatar top-avatar">MA</div>
+            <SignOutButton />
+            <div aria-hidden="true" className="avatar top-avatar">{initials}</div>
           </div>
         </header>
         <main className="page-content">{children}</main>

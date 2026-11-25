@@ -11,7 +11,8 @@ interface FinanceContextValue {
   refresh: () => Promise<void>;
   saveTransaction: (input: Omit<Transaction, "id">, id?: string) => Promise<void>;
   deleteTransaction: (id: string) => Promise<void>;
-  saveWish: (input: Omit<WishlistItem, "id" | "notified">, id?: string) => Promise<void>;
+  saveWish: (input: Omit<WishlistItem, "id" | "notified" | "savedAmount">, id?: string) => Promise<void>;
+  contributeToWish: (id: string, amount: number) => Promise<void>;
   deleteWish: (id: string) => Promise<void>;
 }
 
@@ -94,10 +95,18 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
     await refresh();
   }, [refresh]);
 
-  const saveWish = useCallback(async (input: Omit<WishlistItem, "id" | "notified">, id?: string) => {
+  const saveWish = useCallback(async (input: Omit<WishlistItem, "id" | "notified" | "savedAmount">, id?: string) => {
     await request(id ? `/api/wishlist/${id}` : "/api/wishlist", {
       method: id ? "PUT" : "POST",
       body: JSON.stringify(input),
+    });
+    await refresh();
+  }, [refresh]);
+
+  const contributeToWish = useCallback(async (id: string, amount: number) => {
+    await request(`/api/wishlist/${id}/contributions`, {
+      method: "POST",
+      body: JSON.stringify({ amount }),
     });
     await refresh();
   }, [refresh]);
@@ -108,8 +117,8 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
   }, [refresh]);
 
   const value = useMemo(
-    () => ({ transactions, wishlist, loading, error, refresh, saveTransaction, deleteTransaction, saveWish, deleteWish }),
-    [transactions, wishlist, loading, error, refresh, saveTransaction, deleteTransaction, saveWish, deleteWish],
+    () => ({ transactions, wishlist, loading, error, refresh, saveTransaction, deleteTransaction, saveWish, contributeToWish, deleteWish }),
+    [transactions, wishlist, loading, error, refresh, saveTransaction, deleteTransaction, saveWish, contributeToWish, deleteWish],
   );
 
   return <FinanceContext.Provider value={value}>{children}</FinanceContext.Provider>;

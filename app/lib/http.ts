@@ -23,3 +23,10 @@ export function apiError(error: unknown) {
     { status: missingDatabaseUrl ? 503 : 500 },
   );
 }
+
+export function authenticationRequiredResponse() {
+  return NextResponse.json(
+    { error: "Bạn cần đăng nhập để truy cập dữ liệu này." },
+    { status: 401 },
+  );
+}

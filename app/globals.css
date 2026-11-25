@@ -27,7 +27,8 @@ a { color: inherit; text-decoration: none; }
 
 .app-layout { min-height: 100vh; }
 .sidebar { position: fixed; inset: 0 auto 0 0; z-index: 20; display: flex; width: 248px; flex-direction: column; padding: 27px 19px 18px; border-right: 1px solid #e8eae4; background: #fbfbf8; }
-.brand { display: inline-flex; width: max-content; align-items: center; gap: 10px; color: #2d4d3d; font-family: "Manrope", sans-serif; font-size: 22px; font-weight: 800; letter-spacing: -1.25px; }
+.brand { display: inline-flex; width: max-content; max-width: 100%; align-items: center; gap: 10px; color: #2d4d3d; font-family: "Manrope", sans-serif; font-size: 20px; font-weight: 800; letter-spacing: -1.25px; }
+.sidebar .brand > span:last-child { white-space: nowrap; }
 .brand-mark { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 12px; background: #e4eee3; color: #396c53; }
 .brand-dot { color: #c6805a; }
 .workspace-label { margin: 54px 0 13px 10px; color: #9aa39c; font-size: 9px; font-weight: 700; letter-spacing: 1.15px; }
@@ -47,6 +48,7 @@ a { color: inherit; text-decoration: none; }
 .profile-copy strong { font-size: 12px; }
 .profile-copy span { color: var(--ink-faint); font-size: 10px; }
 .profile-more { width: 28px !important; height: 28px !important; }
+.sign-out-button { width: 30px; height: 30px; }
 
 .main-column { min-height: 100vh; margin-left: 248px; }
 .topbar { position: sticky; top: 0; z-index: 10; display: flex; height: 66px; align-items: center; justify-content: space-between; padding: 0 43px; border-bottom: 1px solid #e9ebe5; background: rgb(250 250 247 / 91%); backdrop-filter: blur(14px); }
@@ -243,8 +245,11 @@ a { color: inherit; text-decoration: none; }
 .wish-progress-heading strong { color: #578060; font-size: 9px; }
 .wish-progress-track { height: 5px; }
 .wish-card-footer { display: flex; align-items: center; justify-content: space-between; gap: 7px; min-height: 40px; margin-top: 7px; border-top: 1px solid #f0f1ed; color: #929c94; font-size: 8px; }
-.wish-card-footer > div { display: flex; }
+.wish-card-footer > div { display: flex; align-items: center; gap: 4px; }
 .wish-card-footer .icon-button { width: 28px; height: 28px; }
+.wish-fund-button { display: inline-flex; min-height: 28px; align-items: center; gap: 4px; padding: 0 7px; border: 1px solid #dfe8df; border-radius: 8px; background: #f7faf6; color: #4e765b; font-size: 8px; font-weight: 700; white-space: nowrap; cursor: pointer; transition: background .15s, border-color .15s; }
+.wish-fund-button:hover:not(:disabled) { border-color: #b7cbb7; background: #edf4ec; }
+.wish-fund-button:disabled { opacity: .55; cursor: not-allowed; }
 .wish-add-card { position: relative; display: flex; min-height: 266px; flex-direction: column; align-items: center; justify-content: center; gap: 9px; padding: 18px; border: 1px dashed #cbd6c9; border-radius: 13px; background: rgb(249 250 246 / 64%); color: #7b8d7f; cursor: pointer; transition: border-color .15s, background .15s; }
 .wish-add-card:hover { border-color: #83a28a; background: #f0f5ed; }
 .wish-add-card > span:first-child { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 14px; background: #e8efe6; color: #63856a; }
@@ -263,6 +268,8 @@ a { color: inherit; text-decoration: none; }
 .modal-backdrop { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 18px; background: rgb(28 39 32 / 40%); backdrop-filter: blur(3px); }
 .modal-card { width: min(100%, 440px); max-height: min(91vh, 700px); overflow: auto; padding: 22px; border: 1px solid #e9ebe5; border-radius: 16px; background: #fff; box-shadow: 0 24px 80px rgb(27 43 33 / 20%); }
 .modal-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; }
+.fund-dialog-balance { margin: 8px 0 0; color: #7d8b80; font-size: 11px; }
+.fund-dialog-balance strong { color: #405d48; }
 .modal-heading .eyebrow { margin-bottom: 6px; }
 .modal-heading h2 { margin: 0; color: #32443a; font-family: "Manrope", sans-serif; font-size: 18px; letter-spacing: -.55px; }
 .modal-form { display: grid; gap: 15px; margin-top: 22px; }
@@ -286,6 +293,7 @@ a { color: inherit; text-decoration: none; }
 }
 @media (max-width: 1100px) {
   .sidebar { width: 218px; padding-right: 15px; padding-left: 15px; }
+  .sidebar .brand > span:last-child { display: none; }
   .main-column { margin-left: 218px; }
   .topbar { padding-right: 28px; padding-left: 28px; }
   .page-content { padding-right: 28px; padding-left: 28px; }
@@ -315,6 +323,7 @@ a { color: inherit; text-decoration: none; }
   .page-content { padding: 29px 21px 26px; }
   .topbar-actions { gap: 12px; }
   .top-search { width: 145px; }
+  .sign-out-button { width: 29px; height: 29px; }
   .dashboard-grid { grid-template-columns: 1fr; }
   .expense-panel, .goals-panel { min-height: auto; }
   .expense-chart-layout { min-height: 220px; grid-template-columns: minmax(155px, .8fr) 1.2fr; }
@@ -415,7 +424,9 @@ a { color: inherit; text-decoration: none; }
   .wish-card-category { font-size: 7px; }
   .wish-price { font-size: 10px; }
   .wish-progress-heading { margin-top: 13px; font-size: 8px; }
-  .wish-card-footer { min-height: 34px; font-size: 7px; }
+  .wish-card-footer { min-height: 34px; flex-wrap: wrap; font-size: 7px; }
+  .wish-card-footer > div { width: 100%; justify-content: flex-end; }
+  .wish-fund-button { min-height: 25px; font-size: 7px; }
   .wish-card-footer .icon-button { width: 25px; height: 25px; }
   .wish-add-card { min-height: 118px; gap: 6px; }
   .wish-add-card > span:first-child { width: 34px; height: 34px; border-radius: 11px; }
@@ -447,6 +458,28 @@ a { color: inherit; text-decoration: none; }
   .category-amount { font-size: 7px; }
   .transaction-overview > div { padding-right: 5px; padding-left: 5px; }
   .transaction-overview strong { font-size: 11px; }
+}
+
+.auth-page { display: grid; min-height: 100vh; place-items: center; padding: 24px; background: radial-gradient(ellipse at 50% 0%, #edf2e8 0, var(--cream) 58%); }
+.auth-card { width: min(100%, 430px); padding: 36px; border: 1px solid #e8ebe4; border-radius: 18px; background: #fff; box-shadow: 0 18px 55px rgb(42 56 46 / 8%); }
+.auth-brand { display: inline-flex; align-items: center; gap: 10px; color: #2d4d3d; font-family: "Manrope", sans-serif; font-size: 19px; font-weight: 800; letter-spacing: -1px; }
+.auth-eyebrow { margin: 31px 0 8px; color: #849087; font-size: 9px; font-weight: 700; letter-spacing: 1.1px; }
+.auth-card h1 { margin: 0; color: #293a31; font-family: "Manrope", sans-serif; font-size: 27px; letter-spacing: -1px; }
+.auth-description { margin: 8px 0 22px; color: #828b84; font-size: 12px; line-height: 1.6; }
+.auth-form { display: grid; gap: 14px; }
+.auth-field { display: grid; gap: 7px; color: #66736a; font-size: 11px; font-weight: 600; }
+.auth-field input { width: 100%; height: 42px; padding: 0 11px; border: 1px solid #e6e9e3; border-radius: 8px; outline: 0; background: #fff; color: #425147; font-size: 12px; font-weight: 400; }
+.auth-field input:focus { border-color: #a1bba4; box-shadow: 0 0 0 3px rgb(103 146 111 / 10%); }
+.auth-submit { width: 100%; min-height: 42px; margin-top: 2px; font-size: 12px; }
+.auth-spinner { animation: spin .8s linear infinite; }
+.auth-error { margin: -2px 0 0; color: #b35345; font-size: 11px; line-height: 1.5; }
+.auth-switch { margin: 21px 0 0; color: #828b84; font-size: 11px; text-align: center; }
+.auth-switch a { color: #47745b; font-weight: 700; }
+.auth-switch a:hover { color: #294d38; }
+@media (max-width: 480px) {
+  .auth-page { padding: 16px; }
+  .auth-card { padding: 27px 22px; border-radius: 15px; }
+  .auth-eyebrow { margin-top: 25px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

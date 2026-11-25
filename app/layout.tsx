@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { Toaster } from "sonner";
-import { AppShell } from "@/components/AppShell";
-import { FinanceProvider } from "@/components/FinanceProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,10 +13,8 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="vi">
-      <body>
-        <FinanceProvider>
-          <AppShell>{children}</AppShell>
-        </FinanceProvider>
+      <body suppressHydrationWarning>
+        {children}
         <Toaster position="top-center" richColors />
       </body>
     </html>
