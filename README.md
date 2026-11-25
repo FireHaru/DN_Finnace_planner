@@ -2,12 +2,14 @@
 
 Ứng dụng theo dõi thu chi và mục tiêu tiết kiệm, xây dựng bằng Next.js App Router, React, TypeScript và Neon Postgres. Giao diện hỗ trợ desktop, tablet và điện thoại.
 
-## Neon Postgres trên Vercel
+## Vercel-Managed Neon database
 
-1. Kết nối database với Vercel bằng [Vercel-Managed Neon](https://neon.com/docs/guides/vercel-managed-integration) nếu tạo Neon qua Vercel, hoặc [Neon-Managed integration](https://neon.com/docs/guides/neon-managed-vercel-integration) nếu đã có tài khoản Neon. Chọn project và môi trường (`Development`, `Preview`, `Production`) cần dùng.
-2. Trong Neon Console, chọn đúng database/branch, mở **SQL Editor**, dán nội dung từ [`db/schema.sql`](./db/schema.sql) rồi chạy để tạo bảng.
-3. Integration thêm `DATABASE_URL` vào Vercel. Dùng connection string pooled do Neon cấp; giữ biến này ở server, không đổi thành `NEXT_PUBLIC_DATABASE_URL`.
-4. Để chạy local, sao chép `.env.example` thành `.env` rồi thay `DATABASE_URL` bằng connection string trong Neon Console:
+Database của ứng dụng được tạo qua Vercel-Managed Neon integration. Vercel quản lý kết nối và billing; database bên dưới là Neon Postgres, nên schema SQL và driver Neon hiện tại vẫn được dùng.
+
+1. Tạo hoặc mở project trên Vercel, sau đó cài [Neon Postgres integration](https://vercel.com/marketplace/neon). Chọn **Create New Neon Account** nếu muốn Vercel quản lý tài nguyên Neon.
+2. Kết nối database với project Vercel và chọn môi trường cần dùng (`Development`, `Preview`, `Production`). Integration sẽ thêm `DATABASE_URL` vào môi trường đã chọn.
+3. Mở database trong Neon Console, chọn đúng branch, vào **SQL Editor**, dán nội dung từ [`db/schema.sql`](./db/schema.sql) rồi chạy để tạo bảng.
+4. Khi chạy local, sao chép `.env.example` thành `.env` rồi thay placeholder `DATABASE_URL` bằng connection string Neon:
 
    ```powershell
    Copy-Item .env.example .env
@@ -22,7 +24,7 @@
    npm run dev
    ```
 
-Để deploy, import repository vào Vercel, kết nối Neon và bảo đảm `DATABASE_URL` được gán cho môi trường deploy. Sau khi đổi environment variables, deploy lại project. Có thể dùng [kết nối thủ công](https://neon.com/docs/guides/vercel-manual) nếu không cài integration.
+Để deploy, import repository này vào Vercel, kết nối Neon integration với project và bảo đảm `DATABASE_URL` được gán cho môi trường Production. Sau khi thay đổi environment variables, deploy lại project.
 
 ## Lệnh hữu ích
 
